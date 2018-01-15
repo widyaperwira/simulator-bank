@@ -1,0 +1,54 @@
+#!/bin/sh
+
+JAVA_HOME=/usr/lib/jvm/java-8-oracle
+export JAVA_HOME
+
+SFW_HOME=`dirname $0`
+export SFW_HOME
+
+SERVICE_NAME=bni-simulator
+export SERVICE_NAME
+
+SERVICE_ID=DIMO_GATEWAY
+export SERVICE_ID
+
+
+case $1 in
+start) # your code to start the service
+        cd $SFW_HOME
+	rm -f deploy/shutdown.xml
+        $JAVA_HOME/bin/java -DbniSimId=$SERVICE_ID -Dserver.port=8089 -jar bni-simulator.jar -Dserver.port=8089;;
+stop) # your code to stop the service
+                pid=`/bin/ps -ef | /bin/grep java | /bin/grep $SERVICE_ID | awk '{print $2}'`
+                if [ -n "$pid" ];
+                        then
+                                kill -9 $pid
+                                echo
+                                echo $SERVICE_NAME server is stopped with pid: $pid
+                echo
+                        else
+                                echo
+                                echo $SERVICE_NAME server is stopped.
+                        echo
+                fi
+;;
+status) # your code to view the service
+                pid=`/bin/ps -ef | /bin/grep java | /bin/grep $SERVICE_ID | awk '{print $2}'`
+                if [ -n "$pid" ];
+                        then
+                                echo
+                                echo $SERVICE_NAME server is running with pid: $pid
+                echo
+                        else
+                                echo
+                                echo $SERVICE_NAME server is stopped.
+                        echo
+                fi
+
+;;
+*)
+        echo "Usage [start|status|stop]"
+        exit 1
+esac
+exit 0
+
